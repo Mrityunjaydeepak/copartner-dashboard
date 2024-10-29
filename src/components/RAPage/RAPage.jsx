@@ -51,7 +51,7 @@ const RAPage = () => {
     const fetchExpertsData = async () => {
       try {
         const expertsResponse = await fetch(
-          "https://copartners.in:5132/api/Experts?page=1&pageSize=10000"
+          "https://copartners.in:5132/api/Experts?page=1&pageSize=100000"
         );
         if (!expertsResponse.ok) {
           throw new Error(`Failed to fetch experts: ${expertsResponse.status}`);
@@ -62,7 +62,7 @@ const RAPage = () => {
         const updatedExpertsData = await Promise.all(
           expertsList.map(async (expert) => {
             const raInvoiceResponse = await fetch(
-              `https://copartners.in:5132/api/RADashboard/GetRAInvoice/${expert.id}?page=1&pageSize=10000`
+              `https://copartners.in:5132/api/RADashboard/GetRAInvoice/${expert.id}?page=1&pageSize=100000`
             );
             if (!raInvoiceResponse.ok) {
               throw new Error(
@@ -73,7 +73,7 @@ const RAPage = () => {
             const invoices = raInvoiceData.data;
 
             const usersPaid = invoices.reduce(
-              (sum, invoice) => sum + (invoice.amount || 0),
+              (sum, invoice) => sum + (invoice.totalAmount || 0),
               0
             );
 
