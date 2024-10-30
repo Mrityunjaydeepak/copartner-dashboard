@@ -28,6 +28,7 @@ const RAPage = () => {
       key: "selection",
     },
   ]);
+ 
   const [filteredData, setFilteredData] = useState([]);
   const [filteredExpertsData, setFilteredExpertsData] = useState([]);
 
@@ -51,7 +52,7 @@ const RAPage = () => {
     const fetchExpertsData = async () => {
       try {
         const expertsResponse = await fetch(
-          "https://copartners.in:5132/api/Experts?page=1&pageSize=100000"
+          "https://copartners.in:5132/api/Experts?page=1&pageSize=1000000"
         );
         if (!expertsResponse.ok) {
           throw new Error(`Failed to fetch experts: ${expertsResponse.status}`);
@@ -62,7 +63,7 @@ const RAPage = () => {
         const updatedExpertsData = await Promise.all(
           expertsList.map(async (expert) => {
             const raInvoiceResponse = await fetch(
-              `https://copartners.in:5132/api/RADashboard/GetRAInvoice/${expert.id}?page=1&pageSize=100000`
+              `https://copartners.in:5132/api/RADashboard/GetRAInvoice/${expert.id}?page=1&pageSize=1000000`
             );
             if (!raInvoiceResponse.ok) {
               throw new Error(
@@ -104,11 +105,17 @@ const RAPage = () => {
       const startDate = dateRange[0].startDate
         ? new Date(dateRange[0].startDate).setHours(0, 0, 0, 0)
         : null;
+        
+      
       const endDate = dateRange[0].endDate
         ? new Date(dateRange[0].endDate).setHours(23, 59, 59, 999)
         : null;
+       
+        
 
       const filteredTurnover = expertsData.map((expert) => {
+        // console.log(expertsData.totalAmount);
+       
         const filteredInvoices = expert.invoices.filter((invoice) => {
           const date = new Date(invoice.subscribeDate).getTime();
           if (startDate && endDate) {
@@ -116,11 +123,13 @@ const RAPage = () => {
           }
           return true;
         });
-
+      
         const turnover = filteredInvoices.reduce(
+         
           (sum, invoice) => sum + (parseFloat(invoice.totalAmount) || 0),
           0
         );
+       
 
         return {
           ...expert,
@@ -177,6 +186,7 @@ const RAPage = () => {
 
       return filteredInvoices.reduce(
         (sum, invoice) => sum + (parseFloat(invoice.totalAmount) || 0),
+        
         0
       );
     }
@@ -198,11 +208,15 @@ const RAPage = () => {
     if (dateRange[0].startDate && dateRange[0].endDate) {
       const startDate = dateRange[0].startDate.toLocaleDateString();
       const endDate = dateRange[0].endDate.toLocaleDateString();
+      
       return `${startDate} - ${endDate}`;
+
     } else if (dateRange[0].startDate || dateRange[0].endDate) {
       const date =
         (dateRange[0].startDate || dateRange[0].endDate).toLocaleDateString();
+        console.log(`${date}`);
       return `${date}`;
+     
     }
     return "Select Date Range";
   };
@@ -402,9 +416,14 @@ const RAPage = () => {
             <DateRange
               editableDateInputs={true}
               onChange={(item) => setDateRange([item.selection])}
+
               moveRangeOnFirstSelection={false}
               ranges={dateRange}
+              
+              
             />
+             
+
             <div className="flex justify-end mt-4">
               <button
                 onClick={() => setShowDatePicker(false)}
